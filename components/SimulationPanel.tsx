@@ -1,33 +1,115 @@
 
 import React from 'react';
 import { FloodDataPoint } from '../types';
-import { MapPin, CloudRain, Waves, ArrowUpCircle, Info, Database } from 'lucide-react';
+import { 
+  MapPin, 
+  CloudRain, 
+  Waves, 
+  Info, 
+  Radio, 
+  Loader2, 
+  Sparkles, 
+  Thermometer, 
+  Droplets, 
+  Gauge, 
+  AlertTriangle,
+  RefreshCw
+} from 'lucide-react';
 
 interface Props {
   currentData: FloodDataPoint;
   onChange: (newData: FloodDataPoint) => void;
+  onDetectLiveWeather?: () => void;
+  isDetectingWeather?: boolean;
 }
 
-const SimulationPanel: React.FC<Props> = ({ currentData, onChange }) => {
+const SimulationPanel: React.FC<Props> = ({ 
+  currentData, 
+  onChange, 
+  onDetectLiveWeather, 
+  isDetectingWeather = false 
+}) => {
   const handleChange = (field: keyof FloodDataPoint, value: number | string) => {
     onChange({ ...currentData, [field]: value });
   };
 
   return (
     <div className="bg-white p-6 h-full overflow-y-auto border-r border-slate-200">
-      <div className="flex items-center gap-2 mb-2 text-slate-900">
-        <MapPin className="w-5 h-5 text-blue-600" />
-        <h2 className="text-xl font-bold">Risk Simulation</h2>
+      <div className="flex items-center justify-between mb-2 text-slate-900">
+        <div className="flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-blue-600" />
+          <h2 className="text-xl font-bold">Hydrometeorology</h2>
+        </div>
       </div>
-      <div className="flex items-center gap-1.5 mb-6 opacity-60">
-        <Database className="w-3 h-3" />
-        <span className="text-[10px] font-bold uppercase tracking-tighter">India Regional Dataset v2024.1</span>
+      <p className="text-xs text-slate-500 mb-4 truncate font-medium">
+        Area: <span className="font-bold text-slate-800">{currentData.locationName}</span>
+      </p>
+
+      {/* Live Weather Detection Button */}
+      <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50/60 border border-blue-200">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-black uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+            Live Atmosphere Telemetry
+          </span>
+          {currentData.liveWeather?.isLive && (
+            <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Synced
+            </span>
+          )}
+        </div>
+
+        <button
+          onClick={onDetectLiveWeather}
+          disabled={isDetectingWeather}
+          className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {isDetectingWeather ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Detecting Real-Life Weather...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-4 h-4 text-blue-200" />
+              <span>{currentData.liveWeather?.isLive ? 'Refresh Real-Life Weather' : 'Detect Live Weather for Area'}</span>
+            </>
+          )}
+        </button>
+
+        {currentData.liveWeather?.isLive ? (
+          <div className="mt-3 pt-3 border-t border-blue-200/60 grid grid-cols-2 gap-2 text-[11px]">
+            <div className="bg-white/80 p-2 rounded border border-blue-100">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase">Condition</span>
+              <span className="font-extrabold text-slate-800 truncate block">{currentData.liveWeather.weatherDescription}</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded border border-blue-100">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase">Current Rain Rate</span>
+              <span className="font-extrabold text-blue-700 block">{currentData.liveWeather.precipitationRate} mm/h</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded border border-blue-100">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase">24h Rain Gauge</span>
+              <span className="font-extrabold text-blue-700 block">{currentData.liveWeather.precipitation24h} mm</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded border border-blue-100">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase">Terrain Elevation</span>
+              <span className="font-extrabold text-slate-800 block">{currentData.liveWeather.elevation} m</span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-[10px] text-blue-900/70 mt-2 leading-tight">
+            Connects to global meteorological radar and digital elevation sensors for this precise latitude and longitude.
+          </p>
+        )}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
-            <CloudRain className="w-4 h-4" /> 24h Rainfall (mm)
+          <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <CloudRain className="w-4 h-4 text-blue-600" /> 24h Rainfall (mm)
+            </span>
+            <span className="text-xs font-black text-blue-600">{currentData.rainfall} mm</span>
           </label>
           <input
             type="range"
@@ -40,14 +122,17 @@ const SimulationPanel: React.FC<Props> = ({ currentData, onChange }) => {
           />
           <div className="flex justify-between mt-1 text-[10px] text-slate-500 font-bold">
             <span>0</span>
-            <span className="text-blue-600">{currentData.rainfall} mm</span>
+            <span className="text-slate-400">Flash Flood Alert &gt; 180mm</span>
             <span>1200+</span>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
-            <Waves className="w-4 h-4" /> Gauge Level (m)
+          <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Waves className="w-4 h-4 text-cyan-600" /> Gauge Water Level (m)
+            </span>
+            <span className="text-xs font-black text-cyan-700">{currentData.waterLevel} m</span>
           </label>
           <input
             type="range"
@@ -60,14 +145,16 @@ const SimulationPanel: React.FC<Props> = ({ currentData, onChange }) => {
           />
           <div className="flex justify-between mt-1 text-[10px] text-slate-500 font-bold">
             <span>0m</span>
-            <span className="text-blue-600">{currentData.waterLevel} m</span>
             <span>25m</span>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
-            <Waves className="w-4 h-4" /> Peak Discharge (m³/s)
+          <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Waves className="w-4 h-4 text-indigo-600" /> Peak River Discharge (m³/s)
+            </span>
+            <span className="text-xs font-black text-indigo-700">{currentData.riverDischarge.toLocaleString()}</span>
           </label>
           <input
             type="range"
@@ -80,20 +167,19 @@ const SimulationPanel: React.FC<Props> = ({ currentData, onChange }) => {
           />
           <div className="flex justify-between mt-1 text-[10px] text-slate-500 font-bold">
             <span>0</span>
-            <span className="text-blue-600">{currentData.riverDischarge.toLocaleString()}</span>
             <span>40k+</span>
           </div>
         </div>
 
         <div className="pt-4 border-t border-slate-100">
-          <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Geospatial Context</h3>
+          <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Geospatial Terrain Context</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1 tracking-tighter">Elevation (m)</label>
               <input 
                 type="number" 
                 value={currentData.elevation}
-                onChange={(e) => handleChange('elevation', parseInt(e.target.value))}
+                onChange={(e) => handleChange('elevation', parseInt(e.target.value) || 0)}
                 className="w-full px-3 py-2 border border-slate-200 rounded bg-slate-50 text-sm font-bold"
               />
             </div>
@@ -102,7 +188,7 @@ const SimulationPanel: React.FC<Props> = ({ currentData, onChange }) => {
               <input 
                 type="number" 
                 value={currentData.historicalFloods}
-                onChange={(e) => handleChange('historicalFloods', parseInt(e.target.value))}
+                onChange={(e) => handleChange('historicalFloods', parseInt(e.target.value) || 0)}
                 className="w-full px-3 py-2 border border-slate-200 rounded bg-slate-50 text-sm font-bold"
               />
             </div>
@@ -123,11 +209,11 @@ const SimulationPanel: React.FC<Props> = ({ currentData, onChange }) => {
           </div>
         </div>
 
-        <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+        <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
           <div className="flex items-start gap-2">
             <Info className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
             <p className="text-[11px] text-slate-600 leading-tight font-medium">
-              Parameters are synchronized with the <span className="font-bold text-slate-900">Flood Risk in India</span> dataset metrics. Changes update the XAI analysis engine immediately.
+              Multi-spectral area risk scoring updates dynamically on each parameter change.
             </p>
           </div>
         </div>
