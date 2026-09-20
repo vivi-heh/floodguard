@@ -136,9 +136,9 @@ export const WeatherForecast7Day: React.FC<Props> = ({
         <div className="bg-slate-50 p-3 rounded-lg border border-slate-200/70">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Maximum Projected Hazard</span>
           <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-xl font-black text-slate-900">{maxRiskDay.projectedRiskScore.toFixed(0)}/100</span>
-            <span className={`text-xs font-black uppercase ${maxRiskDay.projectedRiskLevel === RiskLevel.CRITICAL ? 'text-red-600' : maxRiskDay.projectedRiskLevel === RiskLevel.HIGH ? 'text-rose-600' : maxRiskDay.projectedRiskLevel === RiskLevel.MEDIUM ? 'text-amber-600' : 'text-emerald-600'}`}>
-              • {maxRiskDay.projectedRiskLevel}
+            <span className="text-xl font-black text-slate-900">{(maxRiskDay?.projectedRiskScore ?? 0).toFixed(0)}/100</span>
+            <span className={`text-xs font-black uppercase ${maxRiskDay?.projectedRiskLevel === RiskLevel.CRITICAL ? 'text-red-600' : maxRiskDay?.projectedRiskLevel === RiskLevel.HIGH ? 'text-rose-600' : maxRiskDay?.projectedRiskLevel === RiskLevel.MEDIUM ? 'text-amber-600' : 'text-emerald-600'}`}>
+              • {maxRiskDay?.projectedRiskLevel ?? 'Low'}
             </span>
           </div>
         </div>
@@ -193,12 +193,12 @@ export const WeatherForecast7Day: React.FC<Props> = ({
                 <div>
                   <div className="flex items-center justify-between text-[9px] font-bold mb-1">
                     <span className="text-slate-500">Risk Score</span>
-                    <span className="text-slate-900 font-black">{day.projectedRiskScore.toFixed(0)}</span>
+                    <span className="text-slate-900 font-black">{(day?.projectedRiskScore ?? 0).toFixed(0)}</span>
                   </div>
                   <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${getRiskBarColor(day.projectedRiskLevel)} rounded-full`}
-                      style={{ width: `${Math.min(day.projectedRiskScore, 100)}%` }}
+                      style={{ width: `${Math.min(day?.projectedRiskScore ?? 0, 100)}%` }}
                     />
                   </div>
                 </div>
@@ -349,7 +349,7 @@ export const WeatherForecast7Day: React.FC<Props> = ({
                           style={{ height: `${Math.max(riskHeightPercent, 4)}%` }}
                         >
                           <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-slate-800 bg-white px-1 rounded shadow-xs whitespace-nowrap z-20">
-                            {day.projectedRiskScore.toFixed(0)}/100
+                            {(day?.projectedRiskScore ?? 0).toFixed(0)}/100
                           </span>
                         </div>
                       </div>

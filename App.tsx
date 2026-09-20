@@ -5,7 +5,7 @@ import { FloodDataPoint, PredictionOutput, AIReasoning, DailyForecast } from './
 import { predictFloodRisk } from './services/mlEngine';
 import { getAIInsights } from './services/geminiService';
 import { fetchLiveWeather, reverseGeocode, fetch7DayForecast } from './services/weatherService';
-import { downloadJsonReport, downloadQgisPackage } from './services/reportGenerator';
+import { downloadJsonReport } from './services/reportGenerator';
 import SimulationPanel from './components/SimulationPanel';
 import RiskDashboard from './components/RiskDashboard';
 import MapContainer from './components/MapContainer';
@@ -14,13 +14,14 @@ import DecisionAssistant from './components/DecisionAssistant';
 import ReportModal from './components/ReportModal';
 import WeatherForecast7Day from './components/WeatherForecast7Day';
 import { 
-  Download, 
   Share2, 
   AlertTriangle, 
   Radio, 
   Loader2, 
   CheckCircle2,
-  Calendar
+  Calendar,
+  SlidersHorizontal,
+  X
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -34,6 +35,7 @@ const App: React.FC = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [forecast7Day, setForecast7Day] = useState<DailyForecast[]>([]);
   const [loadingForecast, setLoadingForecast] = useState(false);
+  const [isMobileControlsOpen, setIsMobileControlsOpen] = useState(false);
 
   // Core ML Update Logic
   useEffect(() => {
@@ -168,7 +170,8 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans text-slate-900">
-      <aside className="w-80 shrink-0">
+      {/* Desktop Sidebar Controls (xl+) */}
+      <aside className="hidden xl:block w-80 shrink-0 h-full border-r border-slate-200 overflow-y-auto">
         <SimulationPanel
           currentData={selectedPoint}
           onChange={handleDataChange}
@@ -177,44 +180,88 @@ const App: React.FC = () => {
         />
       </aside>
 
+      {/* Mobile & Tablet Drawer Modal (< xl) */}
+      {isMobileControlsOpen && (
+        <div className="fixed inset-0 z-50 xl:hidden flex">
+          <div 
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" 
+            onClick={() => setIsMobileControlsOpen(false)} 
+          />
+          <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col z-10">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-blue-600" />
+                <span className="font-black text-sm text-slate-900">Hydrological Controls</span>
+              </div>
+              <button 
+                onClick={() => setIsMobileControlsOpen(false)}
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors cursor-pointer"
+                title="Close Controls"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <SimulationPanel
+                currentData={selectedPoint}
+                onChange={handleDataChange}
+                onDetectLiveWeather={() => handleDetectLiveWeather(selectedPoint)}
+                isDetectingWeather={isDetectingWeather}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 overflow-y-auto">
-        <header className="bg-white border-b border-slate-200 px-8 py-3.5 sticky top-0 z-50 flex flex-wrap justify-between items-center gap-4">
+        <header className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 sticky top-0 z-40 flex flex-wrap justify-between items-center gap-3">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg text-white shadow-sm shadow-blue-500/30">
-              <AlertTriangle className="w-5 h-5" />
+            {/* Mobile Controls Trigger Button */}
+            <button
+              onClick={() => setIsMobileControlsOpen(true)}
+              className="xl:hidden flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 cursor-pointer"
+              title="Open Parameter Controls"
+            >
+              <SlidersHorizontal className="w-4 h-4 text-blue-600" />
+              <span className="hidden sm:inline">Controls</span>
+            </button>
+
+            <div className="bg-blue-600 p-2 rounded-lg text-white shadow-xs">
+              <AlertTriangle className="w-5 h-5 shrink-0" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black text-slate-900 leading-none">FloodGuard AI</h1>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <h1 className="text-lg sm:text-xl font-black text-slate-900 leading-none">FloodGuard AI</h1>
                 <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-1">
-                  <Radio className="w-3 h-3 text-blue-600" /> Hydrological Risk Model
+                  <Radio className="w-3 h-3 text-blue-600" /> Real-Life Model
                 </span>
               </div>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">
-                Real-Life Area Score & Live Weather Detection System (2021–2026)
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5 hidden xs:block">
+                Area Score & Telemetry System
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Quick Live Weather Trigger */}
             <button
               onClick={() => handleDetectLiveWeather(selectedPoint)}
               disabled={isDetectingWeather}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
             >
               {isDetectingWeather ? (
                 <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
               ) : (
                 <Radio className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
               )}
-              <span>{isDetectingWeather ? 'Detecting Live Weather...' : 'Detect Live Weather'}</span>
+              <span className="hidden sm:inline">{isDetectingWeather ? 'Detecting Live...' : 'Detect Live Weather'}</span>
+              <span className="sm:hidden">{isDetectingWeather ? 'Live...' : 'Live Weather'}</span>
             </button>
 
             {/* Quick 7-Day Forecast anchor button */}
             <a
               href="#weather-7day-prediction-section"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
               title="Jump to 7-Day Weather & Flood Risk Prediction"
             >
               <Calendar className="w-3.5 h-3.5 text-blue-600" />
@@ -224,26 +271,16 @@ const App: React.FC = () => {
             {/* Export Report Button */}
             <button 
               onClick={() => setIsReportModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 cursor-pointer"
-              title="Export Full Assessment Report (PDF, Text, Data)"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-300 cursor-pointer"
+              title="Export Formatted Assessment Report (PDF, Markdown, JSON)"
             >
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-3.5 h-3.5 text-slate-700" />
               <span>Export Report</span>
-            </button>
-
-            {/* QGIS Package Button */}
-            <button 
-              onClick={() => downloadQgisPackage(dataPoints, selectedPoint)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-xs active:scale-95 cursor-pointer"
-              title="Download QGIS Layer GeoJSON Package (Works 100% independently offline, no API required)"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>QGIS Package</span>
             </button>
           </div>
         </header>
 
-        <div className="max-w-7xl mx-auto p-8 space-y-8">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1">
               <LocationSelector
@@ -272,25 +309,22 @@ const App: React.FC = () => {
             />
           </section>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <RiskDashboard
-                currentData={selectedPoint}
-                prediction={prediction}
-                reasoning={reasoning}
-                loading={loadingAI}
-                error={aiError}
-                onRetry={fetchAIReasoning}
-                onDownloadReport={() => setIsReportModalOpen(true)}
-              />
-            </div>
-            <div className="lg:col-span-1">
+          {/* Real-Life Area Score, 5-Axis Multi-Factorial Decomposition & AI Reasoning */}
+          <RiskDashboard
+            currentData={selectedPoint}
+            prediction={prediction}
+            reasoning={reasoning}
+            loading={loadingAI}
+            error={aiError}
+            onRetry={fetchAIReasoning}
+            onDownloadReport={() => setIsReportModalOpen(true)}
+            decisionAssistant={
               <DecisionAssistant
                 currentData={selectedPoint}
                 prediction={prediction}
               />
-            </div>
-          </div>
+            }
+          />
 
           <footer className="pt-8 border-t border-slate-200">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs font-medium">

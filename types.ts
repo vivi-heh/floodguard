@@ -93,7 +93,7 @@ export interface PredictionOutput {
     hydrologicalStress: number;
     socioInfrastructureExposure: number;
   };
-  featureImportance: { name: string; value: number }[];
+  featureImportance: { name: string; value: number; importance: number }[];
   disasterComparison?: {
     similarPastEvent: string;
     similarityScore: number;

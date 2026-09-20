@@ -65,7 +65,7 @@ const LocationSelector: React.FC<Props> = ({ locations, selectedId, onSelect }) 
 
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded border ${riskColor}`}>
-                      {pred.riskLevel} ({pred.riskScore.toFixed(0)})
+                      {pred?.riskLevel ?? 'Low'} ({(pred?.riskScore ?? 0).toFixed(0)})
                     </span>
 
                     {loc.liveWeather?.isLive && (

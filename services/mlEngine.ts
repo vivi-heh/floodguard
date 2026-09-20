@@ -84,11 +84,11 @@ export const predictFloodRisk = (data: FloodDataPoint): PredictionOutput => {
 
   // Dynamic XAI Feature Importance
   const featureImportance = [
-    { name: 'Meteorological Hazard (Rain/Moisture)', value: Math.round(metHazard * 0.34) },
-    { name: 'Hydrological Basin Discharge', value: Math.round(hydroStress * 0.20) },
-    { name: 'Topographic Runoff Concavity', value: Math.round(topoVuln * 0.20) },
-    { name: 'Soil Saturation & Liquefaction', value: Math.round(soilSaturation * 0.16) },
-    { name: 'Vulnerability & Exposure', value: Math.round(socioExposure * 0.10) }
+    { name: 'Meteorological Hazard (Rain/Moisture)', value: Math.round(metHazard * 0.34), importance: Math.round(metHazard * 0.34) },
+    { name: 'Hydrological Basin Discharge', value: Math.round(hydroStress * 0.20), importance: Math.round(hydroStress * 0.20) },
+    { name: 'Topographic Runoff Concavity', value: Math.round(topoVuln * 0.20), importance: Math.round(topoVuln * 0.20) },
+    { name: 'Soil Saturation & Liquefaction', value: Math.round(soilSaturation * 0.16), importance: Math.round(soilSaturation * 0.16) },
+    { name: 'Vulnerability & Exposure', value: Math.round(socioExposure * 0.10), importance: Math.round(socioExposure * 0.10) }
   ].sort((a, b) => b.value - a.value);
 
   return {

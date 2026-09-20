@@ -437,6 +437,10 @@ const MapContainer: React.FC<Props> = ({ data, selectedPoint, onSelectPoint, onM
                         pred.riskLevel === RiskLevel.HIGH ? 'color: #dc2626;' : 
                         pred.riskLevel === RiskLevel.MEDIUM ? 'color: #ea580c;' : 'color: #059669;';
 
+      const safeRiskScore = Number(pred?.riskScore ?? 0).toFixed(0);
+      const safeLat = (typeof point.latitude === 'number' ? point.latitude : 0).toFixed(3);
+      const safeLng = (typeof point.longitude === 'number' ? point.longitude : 0).toFixed(3);
+
       const liveBadge = point.liveWeather?.isLive ? `
         <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 4px 6px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
           <span style="font-size: 10px; font-weight: 800; color: #047857; text-transform: uppercase;">📡 Live Weather Synced</span>
@@ -457,11 +461,11 @@ const MapContainer: React.FC<Props> = ({ data, selectedPoint, onSelectPoint, onM
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
               <span style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase;">Area Risk Score</span>
               <span style="${riskClass} font-size: 12px; font-weight: 900; text-transform: uppercase;">
-                ${pred.riskLevel} (${pred.riskScore.toFixed(0)}/100)
+                ${pred.riskLevel} (${safeRiskScore}/100)
               </span>
             </div>
             <div style="height: 6px; width: 100%; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
-              <div style="height: 100%; width: ${pred.riskScore}%; background: ${color};"></div>
+              <div style="height: 100%; width: ${pred?.riskScore ?? 0}%; background: ${color};"></div>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
               <span style="font-size: 9px; color: #64748b;">Assessment Mode:</span>
@@ -472,7 +476,7 @@ const MapContainer: React.FC<Props> = ({ data, selectedPoint, onSelectPoint, onM
           <table style="width: 100%; font-size: 10.5px; border-collapse: collapse; margin-bottom: 6px;">
             <tr>
               <td style="color: #64748b; padding: 2px 0;">Coordinates</td>
-              <td style="text-align: right; font-weight: 600; color: #334155;">${point.latitude.toFixed(3)}, ${point.longitude.toFixed(3)}</td>
+              <td style="text-align: right; font-weight: 600; color: #334155;">${safeLat}, ${safeLng}</td>
             </tr>
             <tr>
               <td style="color: #64748b; padding: 2px 0;">24h Rainfall</td>

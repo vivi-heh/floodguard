@@ -46,9 +46,9 @@ const SimulationPanel: React.FC<Props> = ({
       </p>
 
       {/* Live Weather Detection Button */}
-      <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50/60 border border-blue-200">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-black uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
+      <div className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-200">
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
             <Radio className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
             Live Atmosphere Telemetry
           </span>
@@ -62,7 +62,7 @@ const SimulationPanel: React.FC<Props> = ({
         <button
           onClick={onDetectLiveWeather}
           disabled={isDetectingWeather}
-          className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
         >
           {isDetectingWeather ? (
             <>
@@ -71,33 +71,33 @@ const SimulationPanel: React.FC<Props> = ({
             </>
           ) : (
             <>
-              <Sparkles className="w-4 h-4 text-blue-200" />
+              <Sparkles className="w-4 h-4 text-blue-300" />
               <span>{currentData.liveWeather?.isLive ? 'Refresh Real-Life Weather' : 'Detect Live Weather for Area'}</span>
             </>
           )}
         </button>
 
         {currentData.liveWeather?.isLive ? (
-          <div className="mt-3 pt-3 border-t border-blue-200/60 grid grid-cols-2 gap-2 text-[11px]">
-            <div className="bg-white/80 p-2 rounded border border-blue-100">
-              <span className="text-slate-400 font-bold block text-[9px] uppercase">Condition</span>
-              <span className="font-extrabold text-slate-800 truncate block">{currentData.liveWeather.weatherDescription}</span>
+          <div className="mt-3 pt-3 border-t border-slate-200 grid grid-cols-2 gap-2 text-[11px]">
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase tracking-wider">Condition</span>
+              <span className="font-extrabold text-slate-800 truncate block mt-0.5">{currentData.liveWeather.weatherDescription}</span>
             </div>
-            <div className="bg-white/80 p-2 rounded border border-blue-100">
-              <span className="text-slate-400 font-bold block text-[9px] uppercase">Current Rain Rate</span>
-              <span className="font-extrabold text-blue-700 block">{currentData.liveWeather.precipitationRate} mm/h</span>
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase tracking-wider">Current Rain Rate</span>
+              <span className="font-extrabold text-blue-600 block mt-0.5">{currentData.liveWeather.precipitationRate} mm/h</span>
             </div>
-            <div className="bg-white/80 p-2 rounded border border-blue-100">
-              <span className="text-slate-400 font-bold block text-[9px] uppercase">24h Rain Gauge</span>
-              <span className="font-extrabold text-blue-700 block">{currentData.liveWeather.precipitation24h} mm</span>
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase tracking-wider">24h Rain Gauge</span>
+              <span className="font-extrabold text-blue-600 block mt-0.5">{currentData.liveWeather.precipitation24h} mm</span>
             </div>
-            <div className="bg-white/80 p-2 rounded border border-blue-100">
-              <span className="text-slate-400 font-bold block text-[9px] uppercase">Terrain Elevation</span>
-              <span className="font-extrabold text-slate-800 block">{currentData.liveWeather.elevation} m</span>
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs">
+              <span className="text-slate-400 font-bold block text-[9px] uppercase tracking-wider">Terrain Elevation</span>
+              <span className="font-extrabold text-slate-800 block mt-0.5">{currentData.liveWeather.elevation} m</span>
             </div>
           </div>
         ) : (
-          <p className="text-[10px] text-blue-900/70 mt-2 leading-tight">
+          <p className="text-[10px] text-slate-500 mt-2.5 leading-tight">
             Connects to global meteorological radar and digital elevation sensors for this precise latitude and longitude.
           </p>
         )}
